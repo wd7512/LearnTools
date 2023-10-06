@@ -44,7 +44,7 @@ def random_learning(net,loss_fun,max_its=1000,max_mutations=1000,step=1/2**5,thr
 
     return losses,(i,total_k)
 
-def random_mutate(net,step): #randomly mutate the network
+def random_mutate(net,step: float): #randomly mutate the network
     pertubations = []
     for index in net.mutateable_layers:
         w_shape = np.shape(net.layers[index].weights)
@@ -84,6 +84,3 @@ def make_mutate(net,pertubations):
 
 def random_evolution_learning(net,loss_fun,max_its=1000,max_mutations=1000,step=1/2**5,threshold=1e-3,info=False):
     return 0
-
-def test(n):
-    return n+1

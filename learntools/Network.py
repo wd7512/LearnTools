@@ -97,7 +97,7 @@ class layer_dense(): #a dense neural layer
         return self.__class__.__name__ + '\n' +'Weights: '+'\n'+str(self.weights)+'\n'+'Biases: '+'\n'+str(self.biases)
     
 class layer_one_to_one(): # a one to one layer
-    def __init__(self,n_in_out):
+    def __init__(self,n_in_out: int):
         # initialise weights and biases to 0
         self.n_in = n_in_out
         self.n_out = n_in_out
@@ -112,14 +112,16 @@ class layer_one_to_one(): # a one to one layer
         return self.output
     
     def reset(self):
-        self.biases = np.zeros(self.n_in_out)
-        self.weights = np.zeros((self.n_in_out))
+        self.biases = np.zeros(self.n_in)
+        self.weights = np.zeros((self.n_in))
     
     def __str__(self): #prints info regarding the layer
         return self.__class__.__name__ + '\n' +'Weights: '+'\n'+str(self.weights)+'\n'+'Biases: '+'\n'+str(self.biases)
     
 class layer_dropout(): # a dropout layer
-    def __init__(self,n_in_out,prob):
+    def __init__(self,n_in_out: int,prob: float):
+        if prob < 0 or prob > 1:
+            raise ValueError("Probability must lie between 0 and 1")
         self.n_in = n_in_out
         self.n_out = n_in_out
         self.weights = np.random.choice([0, 1], size=n_in_out, p=[1 - prob, prob])
@@ -129,12 +131,12 @@ class layer_dropout(): # a dropout layer
     
     def forward(self,X):
         # push values through the layer
-        self.weights = np.random.choice([0, 1], size=self.n_in_out, p=[1 - self.prob, self.prob]) #create random dropout layer each time
+        self.weights = np.random.choice([0, 1], size=self.n_in, p=[1 - self.prob, self.prob]) #create random dropout layer each time
         self.output = np.multiply(X,self.weights)
         return self.output
     
     def reset(self):
-        self.weights = np.random.choice([0, 1], size=self.n_in_out, p=[1 - self.prob, self.prob])
+        self.weights = np.random.choice([0, 1], size=self.n_in, p=[1 - self.prob, self.prob])
     
     def __str__(self): #prints info regarding the layer
         return self.__class__.__name__ + '\n' +'Rate: '+'\n'+str(self.prob)

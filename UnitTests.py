@@ -1,3 +1,4 @@
+from cgi import test
 from learntools import Network
 import unittest
 import numpy as np
@@ -27,8 +28,11 @@ class TestNetwork(unittest.TestCase):
         lay1.biases[0] = -1
         test_network.add_layer(lay1)
         test_network.add_layer(Network.relu())
+
+        test_network.reset()
         X = np.array([[1]])
         self.assertEqual(test_network.forward(X),0)
+        
 
     @timer_func
     def test_relu2(self):
@@ -38,6 +42,7 @@ class TestNetwork(unittest.TestCase):
         lay1.biases[0] = 0
         test_network.add_layer(lay1)
         test_network.add_layer(Network.relu())
+
         X = np.array([[1]])
         self.assertEqual(test_network.forward(X),2)
 
@@ -97,6 +102,23 @@ class TestNetwork(unittest.TestCase):
         output = test_network.forward(X)
 
         self.assertEqual(output,10)
+
+    def test_reset(self):
+        test_network = Network.network(1,1)
+        test_network.add_layer(Network.layer_dense(1,10))
+        test_network.add_layer(Network.relu())
+        test_network.add_layer(Network.layer_one_to_one(10))
+        test_network.add_layer(Network.softmax())
+        test_network.add_layer(Network.layer_dropout(10,0))
+        test_network.add_layer(Network.sigmoid())
+        test_network.add_layer(Network.layer_dense(10,1))
+
+        test_network.reset()
+
+        X = np.array([[1]])
+
+        self.assertEqual(test_network.forward(X),0)
+        
 
 if __name__ == '__main__':
     unittest.main()
