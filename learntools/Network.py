@@ -56,7 +56,7 @@ class network():
 
     def reset(self): #set all layers to 0
         for index in self.mutateable_layers:
-            self.reset()
+            self.layers[index].reset()
 
     def save_to_file(self, filename: str): 
         '''
