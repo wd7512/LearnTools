@@ -1,10 +1,16 @@
 # LearnTools
 
+### Stucture
+
+ - Network
+    - network (class to hold network)
+    - layer_dense (dense layer from layer class)
+ - Learning
+
 # Getting started
 run the command *pip install learntools*\
 for network use *from learntools import Network*\
 for learning use *from learntools import Learning*
-
 
 ### Note to Self
  - Setup Venv

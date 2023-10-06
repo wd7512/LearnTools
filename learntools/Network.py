@@ -1,3 +1,4 @@
+from multiprocessing import Value
 import numpy as np
 import pickle
 
@@ -5,7 +6,7 @@ class network():
     '''
     class to hold a neural network
     '''
-    def __init__(self,n_in,n_out):
+    def __init__(self,n_in: int,n_out: int):
         self.layers = [] #list to contain all layers
         self.n_in = n_in
         self.n_out = n_out
@@ -18,12 +19,12 @@ class network():
             print('Removing Added Layer')
             del self.layers[-1]
         else:
-            if type(layer).__name__ == 'layer_dense' or type(layer).__name__ == 'layer_one_to_one':
+            if layer.mutateable_weights or layer.mutateable_biases:
                 self.mutateable_layers.append(len(self.layers)-1)
 
         # need to check layer matches last layer
         
-    def remove_layer(self,index): # removes layer at index
+    def remove_layer(self,index: int): # removes layer at index
         del self.layers[index]
 
     def check_integrity(self): #check integrity of layers
@@ -55,9 +56,9 @@ class network():
 
     def reset(self): #set all layers to 0
         for index in self.mutateable_layers:
-            self.layers[index].__init__(self.layers[index].n_in,self.layers[index].n_out)
+            self.reset()
 
-    def save_to_file(self, filename): 
+    def save_to_file(self, filename: str): 
         '''
         saves neural network
         remember to add .pkl to the filename
@@ -74,17 +75,23 @@ class network():
         return display + '\n---------- \n'
 
 class layer_dense(): #a dense neural layer 
-    def __init__(self,n_in,n_out):
+    def __init__(self,n_in: int,n_out: int):
         # initialise weights and biases to 0
         self.biases = np.zeros(n_out)
         self.weights = np.zeros((n_in,n_out))
         self.n_in = n_in
         self.n_out = n_out
+        self.mutateable_weights = True
+        self.mutateable_biases = True
     
     def forward(self,X):
         # push values through the layer
         self.output = np.dot(X,self.weights) + self.biases
         return self.output
+    
+    def reset(self):
+        self.biases = np.zeros(self.n_out)
+        self.weights = np.zeros((self.n_in,self.n_out))
     
     def __str__(self): #prints info regarding the layer
         return self.__class__.__name__ + '\n' +'Weights: '+'\n'+str(self.weights)+'\n'+'Biases: '+'\n'+str(self.biases)
@@ -96,11 +103,17 @@ class layer_one_to_one(): # a one to one layer
         self.n_out = n_in_out
         self.biases = np.zeros(n_in_out)
         self.weights = np.zeros((n_in_out))
+        self.mutateable_weights = True
+        self.mutateable_biases = True
 
     def forward(self,X):
         # push values through the layer
         self.output = np.multiply(X,self.weights) + self.biases
         return self.output
+    
+    def reset(self):
+        self.biases = np.zeros(self.n_in_out)
+        self.weights = np.zeros((self.n_in_out))
     
     def __str__(self): #prints info regarding the layer
         return self.__class__.__name__ + '\n' +'Weights: '+'\n'+str(self.weights)+'\n'+'Biases: '+'\n'+str(self.biases)
@@ -111,12 +124,17 @@ class layer_dropout(): # a dropout layer
         self.n_out = n_in_out
         self.weights = np.random.choice([0, 1], size=n_in_out, p=[1 - prob, prob])
         self.prob = prob
+        self.mutateable_weights = False
+        self.mutateable_biases = False
     
     def forward(self,X):
         # push values through the layer
         self.weights = np.random.choice([0, 1], size=self.n_in_out, p=[1 - self.prob, self.prob]) #create random dropout layer each time
         self.output = np.multiply(X,self.weights)
         return self.output
+    
+    def reset(self):
+        self.weights = np.random.choice([0, 1], size=self.n_in_out, p=[1 - self.prob, self.prob])
     
     def __str__(self): #prints info regarding the layer
         return self.__class__.__name__ + '\n' +'Rate: '+'\n'+str(self.prob)
@@ -128,6 +146,8 @@ class activation_function():
             self.function = function
         else:
             raise Exception('Input is not a function')
+        self.mutateable_weights = False
+        self.mutateable_biases = False
     
     def forward(self,X):
         self.output = np.apply_along_axis(self.function, 1, X)
@@ -138,19 +158,19 @@ class activation_function():
 
 class relu(activation_function):
     def __init__(self):
-        pass
+        super().__init__(self.function)
     def function(self,x):
         return np.maximum(0,x)
         
 class softmax(activation_function):
     def __init__(self):
-        pass
+        super().__init__(self.function)
     def function(self,x):
         return np.exp(x) / np.sum(np.exp(x))
 
 class sigmoid(activation_function):
     def __init__(self):
-        pass
+        super().__init__(self.function)
     def function(self,x):
         return 1 / (1+np.exp(-x))
 
