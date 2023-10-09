@@ -1,4 +1,5 @@
 import numpy as np
+from copy import deepcopy
 
 def random_learning(net,loss_fun,max_its=1000,max_mutations=1000,step=1/2**5,threshold=1e-3,info=False):
     '''
@@ -82,5 +83,13 @@ def make_mutate(net,pertubations):
 
         i += 1
 
-def random_evolution_learning(net,loss_fun,max_its=1000,max_mutations=1000,step=1/2**5,threshold=1e-3,info=False):
+def random_evolution_learning(base_net,loss_fun,population = 100,step = 2**-5,threshold=1e-3):
+    '''
+    generates a population of neural networks that will progress 
+    via asexual reproduction
+    '''
+    pop = [deepcopy(base_net) for i in range(population)]
+
+
+
     return 0

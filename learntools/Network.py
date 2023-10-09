@@ -49,7 +49,7 @@ class network():
         if np.shape(X)[1] != self.n_in:
             raise Exception('Wrong input size')
         else:
-            self.output = X
+            self.output = np.array(X,dtype=float) # make sure it in float format
             for layer in self.layers:
                 self.output = layer.forward(self.output)
             return self.output
@@ -140,6 +140,36 @@ class layer_dropout(): # a dropout layer
     
     def __str__(self): #prints info regarding the layer
         return self.__class__.__name__ + '\n' +'Rate: '+'\n'+str(self.prob)
+    
+class layer_1dconv():
+    def __init__(self,n_in_out: int,kernel_size: int):
+        if n_in_out < kernel_size:
+            raise ValueError("Kernel Size must be greater than n_in")
+        self.n_in = n_in_out
+        self.n_out = n_in_out
+        self.kernel_size = kernel_size
+        self.left_size = np.floor(kernel_size/2)
+        self.right_size = np.ceil(kernel_size/2)
+        self.mutateable_weights = False
+        self.mutateable_biases = False
+
+    def forward(self,X):
+        new_X = X.copy()
+        for i,row in enumerate(X):
+            for j in range(self.n_in):
+                left_index = int(max(0,j-self.left_size))
+                right_index = int(min(self.n_in,j+self.right_size))
+                new_X[i][j] = np.average(row[left_index:right_index])
+
+        self.output = new_X
+        return self.output
+
+
+    def reset(self):
+        pass
+
+    def __str__(self): #prints info regarding the layer
+        return self.__class__.__name__ + '\n' +'Kernel Size: '+'\n'+str(self.kernel_size)
 
 
 class activation_function():

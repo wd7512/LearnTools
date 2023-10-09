@@ -1,4 +1,3 @@
-from cgi import test
 from learntools import Network
 import unittest
 import numpy as np
@@ -103,22 +102,36 @@ class TestNetwork(unittest.TestCase):
 
         self.assertEqual(output,10)
 
+    @timer_func
     def test_reset(self):
-        test_network = Network.network(1,1)
-        test_network.add_layer(Network.layer_dense(1,10))
+        test_network = Network.network(3,1)
+        test_network.add_layer(Network.layer_dense(3,10))
         test_network.add_layer(Network.relu())
         test_network.add_layer(Network.layer_one_to_one(10))
         test_network.add_layer(Network.softmax())
         test_network.add_layer(Network.layer_dropout(10,0))
+        test_network.add_layer(Network.layer_1dconv(10,5))
         test_network.add_layer(Network.sigmoid())
         test_network.add_layer(Network.layer_dense(10,1))
 
         test_network.reset()
 
-        X = np.array([[1]])
+        X = np.array([[1,1,1]])
 
         self.assertEqual(test_network.forward(X),0)
+
+    @timer_func
+    def test_1dconv(self):
+        test_network = Network.network(6,6)
+        test_network.add_layer(Network.layer_1dconv(6,3))
+
+        X = np.array([[1,1,1,4,1,4],
+                      [0,-1,0,-1,0,1]])
+
+        Y_pred = test_network.forward(X)
         
+        self.assertListEqual(list(Y_pred[0]),[1,1,2,2,3,2.5])
+        self.assertListEqual(list(Y_pred[1]),[-1/2,-1/3,-2/3,-1/3,0,1/2])
 
 if __name__ == '__main__':
     unittest.main()
