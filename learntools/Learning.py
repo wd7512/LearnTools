@@ -145,7 +145,7 @@ def random_learning_momentum(
                 print("Stopped Due to Threshold Reached")
             break
 
-        if i!= 0:
+        if i!= 0: # should this go after the next vector is found?
             velocity = p_multiply(old_pertubation,momentum)
             make_mutate(net, velocity)
             losses.append(loss_fun(net))

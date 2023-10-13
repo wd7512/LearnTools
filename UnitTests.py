@@ -122,8 +122,10 @@ class TestNetwork(unittest.TestCase):
         test_network.add_layer(Network.softmax())
         test_network.add_layer(Network.layer_dropout(10, 0))
         test_network.add_layer(Network.layer_1dconv(10, 5))
+        test_network.add_layer(Network.layer_taylor_features(10,3))
+        test_network.add_layer(Network.layer_fourier_features(30))
         test_network.add_layer(Network.sigmoid())
-        test_network.add_layer(Network.layer_dense(10, 1))
+        test_network.add_layer(Network.layer_dense(120, 1))
 
         test_network.reset()
 

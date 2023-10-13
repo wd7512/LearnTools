@@ -18,7 +18,7 @@ class network:
         self.layers.append(layer)
         temp = self.check_integrity()
         if temp == False:
-            print("Removing Added Layer")
+            print("Removing Added Layer: ",layer.__class__.__name__)
             del self.layers[-1]
         else:
             if layer.mutateable_weights or layer.mutateable_biases:
@@ -203,6 +203,64 @@ class layer_1dconv:
             + "Kernel Size: "
             + "\n"
             + str(self.kernel_size)
+        )
+    
+
+class layer_taylor_features:
+    def __init__(self,n_in : int,order: int):
+        self.n_in = n_in
+        self.n_out = n_in * order
+        self.order = order
+        self.mutateable_weights = False
+        self.mutateable_biases = False
+    
+    def forward(self,X):
+        new_X = np.zeros((np.shape(X)[0],self.n_out))
+        for j in range(len(X)):
+            for i in range(self.order):
+                new_X[j][(i)*self.n_in:(i+1)*self.n_in] = X ** (i+1)
+        
+        self.output = new_X
+        return self.output
+    
+    def reset(self):
+        pass
+
+    def __str__(self):  # prints info regarding the layer
+        return (
+            self.__class__.__name__
+            + "\n"
+            + "Order: "
+            + "\n"
+            + str(self.order)
+        )
+    
+class layer_fourier_features:
+    def __init__(self,n_in : int):
+        self.n_in = n_in
+        self.n_out = n_in * 4
+        self.mutateable_weights = False
+        self.mutateable_biases = False
+    
+    def forward(self,X):
+        new_X = np.zeros((np.shape(X)[0],self.n_out))
+
+        for j in range(len(X)):
+        
+            new_X[j][0:self.n_in] = np.sin(X)
+            new_X[j][self.n_in:2*self.n_in] = np.cos(X)
+            new_X[j][2*self.n_in:3*self.n_in] = np.sin(2*X)
+            new_X[j][3*self.n_in:4*self.n_in] = np.cos(2*X)
+
+        self.output = new_X
+        return self.output
+    
+    def reset(self):
+        pass
+
+    def __str__(self):  # prints info regarding the layer
+        return (
+            self.__class__.__name__
         )
 
 
