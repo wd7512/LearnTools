@@ -9,12 +9,25 @@ class network:
     """
 
     def __init__(self, n_in: int, n_out: int):
+        """
+        Initializes the Network class.
+
+        Parameters:
+        n_in (int): Number of input nodes.
+        n_out (int): Number of output nodes.
+        """
         self.layers = []  # list to contain all layers
         self.n_in = n_in
         self.n_out = n_out
         self.mutateable_layers = []  # list to index mutateable layers
 
-    def add_layer(self, layer):  # adds a layer
+    def add_layer(self, layer):
+        """
+        Adds a layer to the neural network.
+
+        Parameters:
+        layer: Layer object to be added to the network.
+        """
         self.layers.append(layer)
         temp = self.check_integrity()
         if temp == False:
@@ -26,10 +39,19 @@ class network:
 
         # need to check layer matches last layer
 
-    def remove_layer(self, index: int):  # removes layer at index
+    def remove_layer(self, index: int):
+        """
+        Removes the layer at the specified index.
+
+        Parameters:
+        index (int): Index of the layer to be removed.
+        """
         del self.layers[index]
 
-    def check_integrity(self):  # check integrity of layers
+    def check_integrity(self):
+        """
+        Checks the integrity of the layers in the network.
+        """
         if self.layers == []:
             return True
         else:
@@ -45,8 +67,13 @@ class network:
 
     def forward(self, X):
         """
-        Inputs must always be a 2d array of a batch of input vectors
-        You can always use a singular input vector but must be contained in another array so it is 2d
+        Propagates the input forward through the network.
+
+        Parameters:
+        X: 2D array of a batch of input vectors.
+
+        Returns:
+        numpy.ndarray: The output of the network after the forward pass.
         """
         if np.shape(X)[1] != self.n_in:
             raise Exception("Wrong input size")
@@ -57,18 +84,42 @@ class network:
             return self.output
 
     def reset(self):  # set all layers to 0
+        """
+        Resets all mutable layers of the network.
+        """
         for index in self.mutateable_layers:
             self.layers[index].reset()
 
+    def random_initilisation(self,func = np.random.normal):
+        """
+        Initializes the network with random values using the provided function.
+
+        Parameters:
+        func (function): The function to use for random initialization. Defaults to numpy.random.normal.
+        """
+        for index in self.mutateable_layers:
+            if self.layers[index].mutateable_weights:
+                self.layers[index].weights = func(size = np.shape(self.layers[index].weights))
+            if self.layers[index].mutateable_biases:
+                self.layers[index].biases = func(size = np.shape(self.layers[index].weights))
+
     def save_to_file(self, filename: str):
         """
-        saves neural network
-        remember to add .pkl to the filename
+        Saves the neural network to a file.
+
+        Parameters:
+        filename (str): The name of the file to save the network to. Ensure to include the '.pkl' extension.
         """
         with open(filename, "wb") as file:
             pickle.dump(self, file)
 
-    def __str__(self):  # print of the layers
+    def __str__(self):
+        """
+        Returns a string representation of the layers in the network.
+
+        Returns:
+        str: Information about the layers in the network.
+        """
         display = ""
         for layer in self.layers:
             display = display + "\n---------- \n" + layer.__str__()
@@ -76,9 +127,18 @@ class network:
         return display + "\n---------- \n"
 
 
-class layer_dense:  # a dense neural layer
+class layer_dense:
+    """
+    A dense neural layer.
+    """
     def __init__(self, n_in: int, n_out: int):
-        # initialise weights and biases to 0
+        """
+        Initializes a dense neural layer.
+
+        Parameters:
+        n_in (int): The number of input units.
+        n_out (int): The number of output units.
+        """
         self.biases = np.zeros(n_out)
         self.weights = np.zeros((n_in, n_out))
         self.n_in = n_in
@@ -87,15 +147,32 @@ class layer_dense:  # a dense neural layer
         self.mutateable_biases = True
 
     def forward(self, X):
-        # push values through the layer
+        """
+        Propagates the input through the layer.
+
+        Parameters:
+        X: Input data.
+
+        Returns:
+        numpy.ndarray: The output of the layer after the forward pass.
+        """
         self.output = np.dot(X, self.weights) + self.biases
         return self.output
 
     def reset(self):
+        """
+        Resets the weights and biases of the layer to 0.
+        """
         self.biases = np.zeros(self.n_out)
         self.weights = np.zeros((self.n_in, self.n_out))
 
     def __str__(self):  # prints info regarding the layer
+        """
+        Returns a string representation of the layer.
+
+        Returns:
+        str: Info
+        """
         return (
             self.__class__.__name__
             + "\n"

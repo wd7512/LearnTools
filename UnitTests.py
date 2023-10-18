@@ -1,3 +1,4 @@
+from cgi import test
 from learntools import Network, Learning
 import unittest
 import numpy as np
@@ -152,6 +153,8 @@ class TestNetwork(unittest.TestCase):
         test_network = Network.network(1, 1)
         test_network.add_layer(Network.layer_dense(1, 1))
 
+        test_network.random_initilisation()
+
         X = [[1]]
         Y = X
         tolerance = 1e-5
@@ -171,6 +174,8 @@ class TestNetwork(unittest.TestCase):
     def test_random_learn_momentum(self):
         test_network = Network.network(1, 1)
         test_network.add_layer(Network.layer_dense(1, 1))
+
+        test_network.random_initilisation()
 
         X = [[1]]
         Y = X
