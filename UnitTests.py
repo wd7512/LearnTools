@@ -1,5 +1,4 @@
-from cgi import test
-from learntools import Network, Learning
+from learntools import Network, Learning, VariableStructure
 import unittest
 import numpy as np
 import os
@@ -191,6 +190,29 @@ class TestNetwork(unittest.TestCase):
         ypred = test_network.forward(X)
 
         self.assertAlmostEqual(ypred, Y, delta=10*tolerance)
+
+    @timer_func
+    def test_Variable_Structure(self):
+        
+
+        X = [[1]]
+        Y = X
+        tolerance = 1e-3
+        
+        def MAELoss(y,ypred):
+            return np.sum(abs(y-ypred))
+
+        LossFunction = lambda net: MAELoss(Y,net.forward(X))
+
+        test_network, _ = VariableStructure.VariableStructure(1,1,LossFunction,100,100,100,0.5,Network.relu, tolerance)
+
+        ypred = test_network.forward(X)
+
+        print(test_network)
+
+        self.assertAlmostEqual(ypred, Y, delta=10*tolerance)
+
+        
 
 
 if __name__ == "__main__":

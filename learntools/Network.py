@@ -61,7 +61,6 @@ class network:
 
             except Exception as e:
                 print("Network Failed Integrity Test")
-                print(e)
                 return False
             return True
 
