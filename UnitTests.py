@@ -122,7 +122,7 @@ class TestNetwork(unittest.TestCase):
         test_network.add_layer(Network.softmax())
         test_network.add_layer(Network.layer_dropout(10, 0))
         test_network.add_layer(Network.layer_1dconv(10, 5))
-        test_network.add_layer(Network.layer_taylor_features(10,3))
+        test_network.add_layer(Network.layer_taylor_features(10, 3))
         test_network.add_layer(Network.layer_fourier_features(30))
         test_network.add_layer(Network.sigmoid())
         test_network.add_layer(Network.layer_dense(120, 1))
@@ -157,17 +157,19 @@ class TestNetwork(unittest.TestCase):
         X = [[1]]
         Y = X
         tolerance = 1e-5
-        
-        def MAELoss(y,ypred):
-            return np.sum(abs(y-ypred))
 
-        LossFunction = lambda net: MAELoss(Y,net.forward(X))
+        def MAELoss(y, ypred):
+            return np.sum(abs(y - ypred))
 
-        Learning.random_learning(test_network,LossFunction,max_mutations=2**10,threshold=tolerance)
+        LossFunction = lambda net: MAELoss(Y, net.forward(X))
+
+        Learning.random_learning(
+            test_network, LossFunction, max_mutations=2**10, threshold=tolerance
+        )
 
         ypred = test_network.forward(X)
 
-        self.assertAlmostEqual(ypred, Y, delta=10*tolerance)
+        self.assertAlmostEqual(ypred, Y, delta=10 * tolerance)
 
     @timer_func
     def test_random_learn_momentum(self):
@@ -179,40 +181,38 @@ class TestNetwork(unittest.TestCase):
         X = [[1]]
         Y = X
         tolerance = 1e-5
-        
-        def MAELoss(y,ypred):
-            return np.sum(abs(y-ypred))
 
-        LossFunction = lambda net: MAELoss(Y,net.forward(X))
+        def MAELoss(y, ypred):
+            return np.sum(abs(y - ypred))
 
-        Learning.random_learning_momentum(test_network,LossFunction,max_mutations=2**10,threshold=tolerance)
+        LossFunction = lambda net: MAELoss(Y, net.forward(X))
+
+        Learning.random_learning_momentum(
+            test_network, LossFunction, max_mutations=2**10, threshold=tolerance
+        )
 
         ypred = test_network.forward(X)
 
-        self.assertAlmostEqual(ypred, Y, delta=10*tolerance)
+        self.assertAlmostEqual(ypred, Y, delta=10 * tolerance)
 
     @timer_func
     def test_Variable_Structure(self):
-        
-
         X = [[1]]
         Y = X
         tolerance = 1e-3
-        
-        def MAELoss(y,ypred):
-            return np.sum(abs(y-ypred))
 
-        LossFunction = lambda net: MAELoss(Y,net.forward(X))
+        def MAELoss(y, ypred):
+            return np.sum(abs(y - ypred))
 
-        test_network, _ = VariableStructure.VariableStructure(1,1,LossFunction,100,100,100,0.5,Network.relu, tolerance)
+        LossFunction = lambda net: MAELoss(Y, net.forward(X))
+
+        test_network, _ = VariableStructure.VariableStructure(
+            1, 1, LossFunction, Network.relu, threshold=tolerance
+        )
 
         ypred = test_network.forward(X)
 
-        print(test_network)
-
-        self.assertAlmostEqual(ypred, Y, delta=10*tolerance)
-
-        
+        self.assertAlmostEqual(ypred, Y, delta=10 * tolerance)
 
 
 if __name__ == "__main__":

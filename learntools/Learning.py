@@ -69,7 +69,7 @@ def random_mutate(net, step: float):  # randomly mutate the network
         net.layers[index].weights += w_pertubation
         net.layers[index].biases += b_pertubation
 
-    return pertubations #make the inside arrays?
+    return pertubations  # make the inside arrays?
 
 
 def undo_mutate(net, pertubations):
@@ -95,26 +95,27 @@ def make_mutate(net, pertubations):
 
         i += 1
 
-def p_add(p1,p2):
-    '''
+
+def p_add(p1, p2):
+    """
     adds p2 to the p1 pertubation
-    '''
+    """
     for i in range(len(p1)):
         for j in range(len(p1[i])):
             p1[i][j] += p2[i][j]
 
     return p1
 
-def p_multiply(p,n):
-    '''
+
+def p_multiply(p, n):
+    """
     multiplies pertubation by n
-    '''
+    """
     for i in range(len(p)):
         for j in range(len(p[i])):
             p[i][j] = p[i][j] * n
 
     return p
-
 
 
 def random_learning_momentum(
@@ -134,8 +135,6 @@ def random_learning_momentum(
     losses = [loss_fun(net)]
     total_k = 0
 
-    
-
     for i in range(max_its):
         if info:
             print("Iter", i, "Loss", losses[-1])
@@ -145,8 +144,8 @@ def random_learning_momentum(
                 print("Stopped Due to Threshold Reached")
             break
 
-        if i!= 0: # should this go after the next vector is found?
-            velocity = p_multiply(old_pertubation,momentum)
+        if i != 0:  # should this go after the next vector is found?
+            velocity = p_multiply(old_pertubation, momentum)
             make_mutate(net, velocity)
             losses.append(loss_fun(net))
 
@@ -157,9 +156,9 @@ def random_learning_momentum(
 
             if loss < losses[-1]:
                 losses[-1] = loss
-                
-                if i!=0:
-                    old_pertubation = p_add(pertubations,velocity)
+
+                if i != 0:
+                    old_pertubation = p_add(pertubations, velocity)
                 else:
                     old_pertubation = pertubations
 
@@ -172,12 +171,11 @@ def random_learning_momentum(
             loss = loss_fun(net)
             if loss < losses[-1]:
                 losses[-1] = loss
-                if i!=0:
-                    old_pertubation = p_add(p_multiply(pertubations,-1),velocity)
+                if i != 0:
+                    old_pertubation = p_add(p_multiply(pertubations, -1), velocity)
                 else:
-                    old_pertubation = p_multiply(pertubations,-1)
+                    old_pertubation = p_multiply(pertubations, -1)
 
-                
                 break
             else:
                 make_mutate(net, pertubations)
