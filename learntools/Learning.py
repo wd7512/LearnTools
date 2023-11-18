@@ -28,6 +28,8 @@ def random_learning(
             break
 
         for k in range(max_mutations):  # mutate so many times before giving up
+            if info:
+                print(f"Mutation: {k}/max_mutations",end = "\r")
             pertubations = random_mutate(net, step)
             loss = loss_fun(net)
 

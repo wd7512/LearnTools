@@ -61,6 +61,7 @@ class network:
 
             except Exception as e:
                 print("Network Failed Integrity Test")
+                print(e)
                 return False
             return True
 
@@ -75,7 +76,7 @@ class network:
         numpy.ndarray: The output of the network after the forward pass.
         """
         if np.shape(X)[1] != self.n_in:
-            raise Exception("Wrong input size")
+            raise Exception(f"Wrong input size: {np.shape(X)[1] }!={self.n_in}")
         else:
             self.output = np.array(X, dtype=float)  # make sure it in float format
             for layer in self.layers:

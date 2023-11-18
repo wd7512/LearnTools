@@ -1,7 +1,6 @@
 # LearnTools
 
 ### Stucture
-
  - Network
     - network (class to hold network) (need to add more insightful prints)
     - layer_dense (dense layer from layer class)
@@ -14,12 +13,22 @@
     - layer_norm WIP (or perhaps a function to normalise data)
  - Learning
     - random_learning 
+    - random_momentumn_learning
 
     - random_evolution_learning WIP
     - random_stochastic_learning (batch random) WIP
     - gradient descent WIP
     - stochastic gradient descent WIP
-    - random_momentumn_learning WIP
+     WIP
+
+### Improvements
+ - Making printing nicer
+ - Make learning a class instead of a function
+    - Loss is maintained as a attribute
+    - alongisde other useful data
+ - Add a layer without a bias
+ - Add just a bias layer
+ - Learning function that remove least important weights
 
 # Getting started
 run the command *pip install learntools*\
