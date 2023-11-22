@@ -22,6 +22,10 @@
      WIP
 
 ### Improvements
+ - Fix random_learning2
+ - Look into making random_learning faster
+    - removal of backwards pertubation
+    - scale = step in normal dist in stead of step * normal dist
  - Making printing nicer
  - Make learning a class instead of a function
     - Loss is maintained as a attribute

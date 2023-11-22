@@ -64,7 +64,7 @@ def random_learning2(
     loss_fun,
     max_its=1000,
     max_mutations=1000,
-    step= 2**-8,
+    step= 2**-5,
     threshold=1e-3,
     eps = 2**-31,
     info=False,
@@ -91,15 +91,16 @@ def random_learning2(
         for k in range(max_mutations):  # mutate so many times before giving up
             if info:
                 print(f"Mutation: {k}/max_mutations",end = "\r")
-            pertubations = random_mutate(net, eps)
+            pertubations, scale = random_mutate_norm(net, eps)
             loss = loss_fun(net)
+            undo_mutate(net,pertubations)
 
             if loss < losses[-1]:
-                make_mutate(net,p_multiply(pertubations,step/eps))
+                make_mutate(net,p_multiply(pertubations,step/scale))
                 losses.append(loss_fun(net))
                 break
             else: # do nothing
-                undo_mutate(net,pertubations)
+                pass
 
         total_k += k
         if k == max_mutations - 1:
@@ -125,6 +126,26 @@ def random_mutate(net, step: float):  # randomly mutate the network
         net.layers[index].biases += b_pertubation
 
     return pertubations  # make the inside arrays?
+
+def random_mutate_norm(net, step: float):  # randomly mutate the network
+    pertubations = []
+    total_size = 0
+    total_abs_sum = 0
+    for index in net.mutateable_layers:
+        w_shape = np.shape(net.layers[index].weights)
+        b_shape = np.shape(net.layers[index].biases)
+
+        w_pertubation = np.random.normal(size=w_shape, scale=step)
+        b_pertubation = np.random.normal(size=b_shape, scale=step)
+
+        pertubations.append([w_pertubation, b_pertubation])
+        total_size += w_pertubation.size + b_pertubation.size
+        total_abs_sum += np.sum(np.abs(w_pertubation)) + np.sum(np.abs(w_pertubation)) 
+
+        net.layers[index].weights += w_pertubation
+        net.layers[index].biases += b_pertubation
+
+    return pertubations , total_abs_sum / total_size # make the inside arrays?
 
 
 def undo_mutate(net, pertubations):

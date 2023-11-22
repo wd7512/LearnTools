@@ -191,8 +191,6 @@ class TestNetwork(unittest.TestCase):
             test_network, LossFunction, max_mutations=2**10, threshold=tolerance
         )
 
-        print(test_network)
-
         ypred = test_network.forward(X)
 
         self.assertAlmostEqual(ypred, Y, delta=10 * tolerance)
