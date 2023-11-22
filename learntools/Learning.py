@@ -12,6 +12,9 @@ def random_learning(
     info=False,
 ):
     """
+    desc: a function that generates a random pertubation p
+    and test is the network + p and network - p offer an improvement.
+
     returns loss over iterations,
     (iterations reached,total mutation attempts)
     """
@@ -47,6 +50,56 @@ def random_learning(
                 break
             else:
                 make_mutate(net, pertubations)
+
+        total_k += k
+        if k == max_mutations - 1:
+            if info:
+                print("Stopped Due to Max Mutations Reached")
+            break
+
+    return losses, (i, total_k)
+
+def random_learning2(
+    net,
+    loss_fun,
+    max_its=1000,
+    max_mutations=1000,
+    step= 2**-8,
+    threshold=1e-3,
+    eps = 2**-31,
+    info=False,
+):
+    """
+    desc: a function that takes a very small value eps and pertubates the network
+    this gives an approximation to the derivative and adjust the net by that times the step.
+
+    returns loss over iterations,
+    (iterations reached,total mutation attempts)
+    """
+    losses = [loss_fun(net)]
+    total_k = 0
+
+    for i in range(max_its):
+        if info:
+            print("Iter", i, "Loss", losses[-1])
+
+        if losses[-1] < threshold:
+            if info:
+                print("Stopped Due to Threshold Reached")
+            break
+
+        for k in range(max_mutations):  # mutate so many times before giving up
+            if info:
+                print(f"Mutation: {k}/max_mutations",end = "\r")
+            pertubations = random_mutate(net, eps)
+            loss = loss_fun(net)
+
+            if loss < losses[-1]:
+                make_mutate(net,p_multiply(pertubations,step/eps))
+                losses.append(loss_fun(net))
+                break
+            else: # do nothing
+                undo_mutate(net,pertubations)
 
         total_k += k
         if k == max_mutations - 1:

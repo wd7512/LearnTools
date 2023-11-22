@@ -172,6 +172,32 @@ class TestNetwork(unittest.TestCase):
         self.assertAlmostEqual(ypred, Y, delta=10 * tolerance)
 
     @timer_func
+    def test_random_learn2(self):
+        test_network = Network.network(1, 1)
+        test_network.add_layer(Network.layer_dense(1, 1))
+
+        test_network.random_initilisation()
+
+        X = [[1]]
+        Y = X
+        tolerance = 1e-5
+
+        def MAELoss(y, ypred):
+            return np.sum(abs(y - ypred))
+
+        LossFunction = lambda net: MAELoss(Y, net.forward(X))
+
+        Learning.random_learning2(
+            test_network, LossFunction, max_mutations=2**10, threshold=tolerance
+        )
+
+        print(test_network)
+
+        ypred = test_network.forward(X)
+
+        self.assertAlmostEqual(ypred, Y, delta=10 * tolerance)
+
+    @timer_func
     def test_random_learn_momentum(self):
         test_network = Network.network(1, 1)
         test_network.add_layer(Network.layer_dense(1, 1))
