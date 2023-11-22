@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.0.18' 
+VERSION = '0.0.19' 
 DESCRIPTION = 'Reinforcement Learning with Numpy'
 LONG_DESCRIPTION = 'Reinforcement Learning with Numpy'
 
